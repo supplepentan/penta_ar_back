@@ -1,0 +1,41 @@
+{% extends 'ar_viewer/base.html' %}
+{% block content %}
+<div class="row">
+    <h1>AR Viewer</h1>
+    <form action="http://192.168.0.29:8000/ar_viewer/" method="post" enctype="multipart/form-data">
+        <div>
+            <input type="file" name="file">
+        </div>
+        <div>
+            <input type="submit" value="送信する">
+        </div>
+    </form>
+    <a-scene>
+        <a-assets>
+            <img id="image" class="apng-image" src="./static/img/supplepentan_t.png" />
+        </a-assets>
+        <a-image id="player" class="apng-image" src="#image" position="0 0 0" rotation="0 0 0">
+        </a-image>
+        <a-entity geometry="
+          primitive: torus;
+          radius: 1;
+          radiusTubular: 0.1;
+          segmentsTubular: 12;" material="
+          color: #EAEFF2;
+          roughness: 0.1;
+          metalness: 0.5;" rotation="10 0 0" position="-3 1 0">
+        </a-entity>
+        <a-camera position="0 1 4" cursor-visible="true" cursor-scale="2" cursor-color="#0095DD" cursor-opacity="0.5">
+        </a-camera>
+    </a-scene>
+</div>
+<script>
+    var scene = document.querySelector('a-scene');
+    var cylinder = document.createElement('a-cylinder');
+    cylinder.setAttribute('color', '#FF9500');
+    cylinder.setAttribute('height', '2');
+    cylinder.setAttribute('radius', '0.75');
+    cylinder.setAttribute('position', '3 1 0');
+    scene.appendChild(cylinder);
+</script>
+{% endblock %}

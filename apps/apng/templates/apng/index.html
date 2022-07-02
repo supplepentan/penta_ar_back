@@ -1,0 +1,16 @@
+{% extends 'photo_frame/base.html' %}
+{% block content %}
+<div class="row">
+    <h1>Photo Frame</h1>
+    <form action="http://192.168.0.29:8000/ar_viewer/" method="post" enctype="multipart/form-data">
+        <div>
+            <input type="file" name="file">
+        </div>
+        <div>
+            <input type="submit" value="送信する">
+        </div>
+    </form>
+</div>
+<script>
+</script>
+{% endblock %}
