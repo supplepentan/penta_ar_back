@@ -1,6 +1,9 @@
 import base64
 import os
+import shutil
 import subprocess
+import tempfile
+import zipfile
 
 from flask import (
     Blueprint,
@@ -14,7 +17,6 @@ from flask import (
     url_for,
 )
 from libs.ar.face_extruct import FaceExtruct
-from libs.making_aping.app import Movie
 from PIL import Image
 from werkzeug.utils import secure_filename
 
@@ -26,7 +28,6 @@ ar = Blueprint(
 )
 
 ALLOWED_EXTENSIONS = {"avi", "mpg", "jpg"}
-UPLOAD_FOLDER = "upload"
 
 
 def allowed_file(filename):
@@ -51,11 +52,9 @@ def index():
             return redirect(request.url)
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
-            path = os.path.join(UPLOAD_FOLDER, filename)
+            path = os.path.join("upload", filename)
             file.save(path)
-            subprocess.run(
-                ["ffmpeg", "-i", path, os.path.join(UPLOAD_FOLDER, "out.apng")]
-            )
+            subprocess.run(["ffmpeg", "-i", path, os.path.join("upload", "out.apng")])
             return {"return": "post"}
         return redirect(request.url)
 
@@ -103,6 +102,58 @@ def face_extruct():
             attachment_filename="face_extruct.jpg",
             mimetype="image/jpg",
         )
+
+
+@ar.route("/marker_maker", methods=["GET", "POST"])
+def marker_maker():
+    if request.method == "GET":
+        return {"return": "GET"}
+    if request.method == "POST":
+        try:
+            file = request.files["file"]
+            filename = secure_filename(file.filename)
+            filepath = os.path.join("upload", filename)
+            file.save(filepath)
+            image = Image.open(filepath).convert("RGB")
+            if image.width == image.height:
+                resize_image = image.resize((512, 512), Image.LANCZOS)
+            elif image.width > image.height:
+                resize_image = image.resize(
+                    (512, round(image.height * 512 / image.width)), Image.LANCZOS
+                )
+            elif image.width < image.height:
+                resize_image = image.resize(
+                    (round(image.width * 512 / image.height), 512), Image.LANCZOS
+                )
+            resize_image.save(os.path.join("upload", "image.jpg"))
+            with tempfile.TemporaryDirectory(dir=".") as dname:
+                temp_filepath = os.path.join(dname, "maker.jpg")
+                print(temp_filepath)
+                resize_image.save(temp_filepath)
+                subprocess.run(["node", "app.js", "-i", temp_filepath])
+            with zipfile.ZipFile(
+                os.path.join("upload", "marker.zip"),
+                "w",
+                compression=zipfile.ZIP_DEFLATED,
+            ) as new_zip:
+                new_zip.write(
+                    os.path.join("upload", "maker.fset"), arcname="maker.fset"
+                )
+                new_zip.write(
+                    os.path.join("upload", "maker.fset3"), arcname="maker.fset3"
+                )
+                new_zip.write(
+                    os.path.join("upload", "maker.iset"), arcname="maker.iset"
+                )
+                new_zip.write(os.path.join("upload", "image.jpg"), arcname="image.jpg")
+                return send_file(
+                    os.path.join("..", "upload", "marker.zip"),
+                    as_attachment=True,
+                    attachment_filename="marker.zip",
+                    mimetype="application/zip",
+                )
+        except:
+            return {"return": "Fouled"}
 
 
 """

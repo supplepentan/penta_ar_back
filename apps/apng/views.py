@@ -52,3 +52,14 @@ def index():
             subprocess.run([])
             return {"return": "post"}
         return redirect(request.url)
+
+
+@apng.route("/apng_make", methods=["GET", "POST"])
+def apng_make():
+    if request.method == "GET":
+        return {"return": "GET"}
+    if request.method == "POST":
+        from libs.making_aping.app import ApngMaker
+
+        apngmaker = ApngMaker()
+        return {"return": "POST"}

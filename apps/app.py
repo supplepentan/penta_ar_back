@@ -10,7 +10,7 @@ from apps.config import config
 def create_app(config_key):
     app = Flask(__name__, static_folder="templates/static")
     app.config.from_object(config[config_key])
-    CORS(app, origins=["http://localhost:3000"])
+    CORS(app, origins=["http://localhost:3000", "http://192.168.0.29:3000"])
 
     @app.route("/", methods=["GET", "POST"])
     def index():
