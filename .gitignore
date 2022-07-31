@@ -6,3 +6,4 @@ package-lock.json
 apps/__pycache__/app.cpython-38.pyc
 libs/making_aping/__pycache__/app.cpython-38.pyc
 apps/apng/__pycache__/views.cpython-38.pyc
+apps/ar/__pycache__/views.cpython-38.pyc

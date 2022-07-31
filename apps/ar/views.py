@@ -146,12 +146,12 @@ def marker_maker():
                     os.path.join("upload", "maker.iset"), arcname="maker.iset"
                 )
                 new_zip.write(os.path.join("upload", "image.jpg"), arcname="image.jpg")
-                return send_file(
-                    os.path.join("..", "upload", "marker.zip"),
-                    as_attachment=True,
-                    attachment_filename="marker.zip",
-                    mimetype="application/zip",
-                )
+            return send_file(
+                os.path.join("..", "upload", "marker.zip"),
+                as_attachment=True,
+                attachment_filename="marker.zip",
+                mimetype="application/zip",
+            )
         except:
             return {"return": "Fouled"}
 
