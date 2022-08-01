@@ -59,7 +59,15 @@ def apng_make():
     if request.method == "GET":
         return {"return": "GET"}
     if request.method == "POST":
+        file = request.files["file"]
+        file_info_color = request.form["fileInfoColor"].split(",")
+
         from libs.making_aping.app import ApngMaker
 
-        apngmaker = ApngMaker()
-        return {"return": "POST"}
+        ApngMaker(file, file_info_color)
+        return send_file(
+            os.path.join("..", "upload", "photoframe.png"),
+            as_attachment=True,
+            attachment_filename="photoframe.png",
+            mimetype="image/png",
+        )
